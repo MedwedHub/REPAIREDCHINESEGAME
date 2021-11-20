@@ -42,8 +42,8 @@ Return:
 def startInterface(screen):
     clock = pygame.time.Clock()
     while True:
-        screen.fill((41, 36, 33))
-        button_1 = Button(screen, (150, 175), '1 Player')
+        screen.fill((69, 36, 70))
+        button_1 = Button(screen, (0, 10), 'PRIVIT!')
         button_2 = Button(screen, (150, 275), '2 Player')
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -117,8 +117,8 @@ def runDemo(screen):
     server_item = manager.list()
     server_item.append(0)
 
-    my_id = 2
-    net_player_id = 1
+    my_id = 1
+    net_player_id = 2
 
 
     client = Client(my_id, data_to_transmit, data_to_receive, is_connected, server_item)

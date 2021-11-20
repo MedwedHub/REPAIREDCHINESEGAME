@@ -34,45 +34,45 @@ class Ball(pygame.sprite.Sprite):
     '''移动'''
 
     def move(self, ball, racket_left, racket_right, hit_sound, goal_sound):
-        if self.isServer:
-            self.rect.left = self.rect.left + self.speed * self.direction_x
-            self.rect.top = min(max(self.rect.top + self.speed * self.direction_y, 0), self.cfg.HEIGHT - self.rect.height)
-            # 撞到球拍
+        #if self.isServer:
+        self.rect.left = self.rect.left + self.speed * self.direction_x
+        self.rect.top = min(max(self.rect.top + self.speed * self.direction_y, 0), self.cfg.HEIGHT - self.rect.height)
+        # 撞到球拍
 
-            if pygame.sprite.collide_rect(ball, racket_left) or pygame.sprite.collide_rect(ball, racket_right):
-                self.direction_x, self.direction_y = -self.direction_x, self.direction_y
-                # self.speed += 1
-                scores = [0, 0]
-                hit_sound.play()
-            # 撞到上侧的墙
-            elif self.rect.top == 0:
-                self.direction_y = 1
-                # self.speed += 1
-                scores = [0, 0]
-            # 撞到下侧的墙
-            elif self.rect.top == self.cfg.HEIGHT - self.rect.height:
-                self.direction_y = -1
-                # self.speed += 1
-                scores = [0, 0]
-            # 撞到左边的墙
-            elif self.rect.left < 0:
-                self.reset()
-                racket_left.reset()
-                racket_right.reset()
-                scores = [0, 1]
-                goal_sound.play()
-            # 撞到右边的墙
-            elif self.rect.right > self.cfg.WIDTH:
-                self.reset()
-                racket_left.reset()
-                racket_right.reset()
-                scores = [1, 0]
-                goal_sound.play()
-            # 普通情况
-            else:
-                scores = [0, 0]
+        if pygame.sprite.collide_rect(ball, racket_left) or pygame.sprite.collide_rect(ball, racket_right):
+            self.direction_x, self.direction_y = -self.direction_x, self.direction_y
+            # self.speed += 1
+            scores = [0, 0]
+            hit_sound.play()
+        # 撞到上侧的墙
+        elif self.rect.top == 0:
+            self.direction_y = 1
+            # self.speed += 1
+            scores = [0, 0]
+        # 撞到下侧的墙
+        elif self.rect.top == self.cfg.HEIGHT - self.rect.height:
+            self.direction_y = -1
+            # self.speed += 1
+            scores = [0, 0]
+        # 撞到左边的墙
+        elif self.rect.left < 0:
+            self.reset()
+            racket_left.reset()
+            racket_right.reset()
+            scores = [0, 1]
+            goal_sound.play()
+        # 撞到右边的墙
+        elif self.rect.right > self.cfg.WIDTH:
+            self.reset()
+            racket_left.reset()
+            racket_right.reset()
+            scores = [1, 0]
+            goal_sound.play()
+        # 普通情况
         else:
             scores = [0, 0]
+    #else:
+        #scores = [0, 0]
         return scores
 
     '''初始化'''
