@@ -10,6 +10,8 @@ import sys
 import cfg
 import pygame
 from modules import *
+from modules.botnet import Client
+from multiprocessing import Manager
 
 '''定义按钮'''
 
@@ -101,13 +103,45 @@ def runDemo(screen):
     # 游戏主循环
     # --左边球拍(ws控制, 仅双人模式时可控制)
     score_left = 0
-    racket_left = Racket(cfg.RACKETPICPATH, 'LEFT', cfg)
+
+    manager = Manager()
+    data_to_transmit = manager.list()
+    data_to_receive = manager.list()
+
+    data_to_transmit.append(0)
+    data_to_receive.append(0)
+
+    is_connected = manager.list()
+    is_connected.append(False)
+
+    server_item = manager.list()
+    server_item.append(0)
+
+    my_id = 2
+    net_player_id = 1
+
+
+    client = Client(my_id, data_to_transmit, data_to_receive, is_connected, server_item)
+
+    racket_left = Racket(cfg.RACKETPICPATH, 'LEFT', cfg, False, net_player_id, client, data_to_transmit, data_to_receive)
     # --右边球拍(↑↓控制)
     score_right = 0
-    racket_right = Racket(cfg.RACKETPICPATH, 'RIGHT', cfg)
+    racket_right = Racket(cfg.RACKETPICPATH, 'RIGHT', cfg, True, my_id, client, data_to_transmit, data_to_receive)
     # --球
-    ball = Ball(cfg.BALLPICPATH, cfg)
+
+    if my_id == 1:
+        isServer = True
+    else:
+        isServer = False
+
+    ball = Ball(cfg.BALLPICPATH, cfg, isServer, client, data_to_transmit, data_to_receive)
     clock = pygame.time.Clock()
+
+    if game_mode == 2:
+        racket_left.start_net_update()
+        racket_right.start_net_update()
+        ball.start_net_update()
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -121,10 +155,7 @@ def runDemo(screen):
         elif pressed_keys[pygame.K_DOWN]:
             racket_right.move('DOWN')
         if game_mode == 2:
-            if pressed_keys[pygame.K_w]:
-                racket_left.move('UP')
-            elif pressed_keys[pygame.K_s]:
-                racket_left.move('DOWN')
+            pass
         else:
             racket_left.automove(ball)
         # 球运动
@@ -142,7 +173,7 @@ def runDemo(screen):
         # --得分
         screen.blit(font.render(str(score_left), False, cfg.WHITE), (150, 10))
         screen.blit(font.render(str(score_right), False, cfg.WHITE), (300, 10))
-        if score_left == 11 or score_right == 11:
+        if score_left == 11000 or score_right == 11000:
             return score_left, score_right
         clock.tick(100)
         pygame.display.update()
@@ -156,7 +187,7 @@ def main():
     pygame.init()
     pygame.mixer.init()
     screen = pygame.display.set_mode((cfg.WIDTH, cfg.HEIGHT))
-    pygame.display.set_caption('pingpong —— Charles的皮卡丘')
+    pygame.display.set_caption('РУССКИЙ ТЕННИС.')
     # 开始游戏
     while True:
         score_left, score_right = runDemo(screen)
