@@ -1,4 +1,5 @@
 '''
+Russian? SOVIET
 Function:
     乒乓球小游戏
 Author:
